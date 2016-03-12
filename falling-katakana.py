@@ -11,7 +11,6 @@ def generate_matrix_characters():
 
 SLEEP_BETWEEN_FRAMES = .05
 FALLING_SPEED = 2
-MATRIX_CHARACTERS = generate_matrix_characters()
 
 class MatrixRain(object):
     MATRIX_CHARACTERS = generate_matrix_characters()
@@ -21,6 +20,7 @@ class MatrixRain(object):
         self.column_index = column_index
         self.rain_length = random.randint(curses.LINES//2, curses.LINES)
         self.head = random.randint(-50, -10)
+        self._reset_speed()
 
     def _random_char(self):
         return random.choice(MatrixRain.MATRIX_CHARACTERS)
@@ -31,15 +31,19 @@ class MatrixRain(object):
             if tail < 0:
                 tail = 0
             self._draw(self.head, tail)
-            self.head = self.head + speed
+            self.head = self.head + self.speed
             yield
             if tail >= curses.LINES:
                 self.head = 0
+                self._reset_speed()
 
     def _draw(self, head, tail):
         for i in range(tail, min(head, curses.LINES)):
             self.stdscr.addstr(i, self.column_index, \
                 self._random_char(), curses.color_pair(1) | curses.A_BOLD)
+
+    def _reset_speed(self):
+        self.speed = random.randint(1, 2)
 
 def config(stdscr):
     curses.curs_set(0)
